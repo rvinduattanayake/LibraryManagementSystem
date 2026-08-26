@@ -1,0 +1,65 @@
+@model MemberReservationRequestViewModel
+@{
+    ViewData["Title"] = "My Reservations";
+    var reservationPage = ViewBag.Reservations as PagedResult<ReservationListItemViewModel> ?? new();
+    var reservations = reservationPage.Items;
+}
+
+<h1>My Reservations</h1>
+<p>Reserve a title when no borrowable copy is available. You'll be notified when a copy is set aside for you.</p>
+
+<div class="two-col">
+    <div class="card">
+        <h2>Place a Reservation</h2>
+        <form asp-action="CreateMyReservation" method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+            <div class="form-group">
+                <label asp-for="BookSearch"></label>
+                <input asp-for="BookSearch" placeholder="Book number, title, or author" />
+                <span asp-validation-for="BookSearch" class="field-validation-error"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Reserve Title</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>My Active Reservations</h2>
+        @if (reservations.Count == 0)
+        {
+            <p>You have no active reservations.</p>
+        }
+        else
+        {
+            <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Book No.</th>
+                        <th>Reserved</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var r in reservations)
+                {
+                    <tr>
+                        <td>@r.BookTitle</td>
+                        <td>@r.BookNumber</td>
+                        <td>@r.ReservedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>
+                            <form asp-action="CancelMyReservation" method="post" data-confirm="Cancel your reservation for '@r.BookTitle'?">
+                                <input type="hidden" name="id" value="@r.Id" />
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </div>
+            <partial name="_Pager" model="reservationPage" />
+        }
+    </div>
+</div>

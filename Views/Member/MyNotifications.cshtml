@@ -1,0 +1,51 @@
+@{
+    ViewData["Title"] = "My Notifications";
+    var notificationPage = ViewBag.Notifications as PagedResult<NotificationListItemViewModel> ?? new();
+    var notifications = notificationPage.Items;
+}
+
+<h1>My Notifications</h1>
+<p>Pickup notices and due-date reminders appear here.</p>
+
+<div class="card">
+    @if (notifications.Count == 0)
+    {
+        <p>You have no notifications.</p>
+    }
+    else
+    {
+        <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Message</th>
+                    <th>Received</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var n in notifications)
+            {
+                <tr>
+                    <td>@n.Message</td>
+                    <td>@n.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td><span class="badge @(n.IsRead ? "badge-read" : "badge-unread")">@(n.IsRead ? "Read" : "Unread")</span></td>
+                    <td>
+                        @if (!n.IsRead)
+                        {
+                            <form asp-action="MarkMyNotificationRead" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@n.Id" />
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-primary">Mark as read</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        </div>
+        <partial name="_Pager" model="notificationPage" />
+    }
+</div>

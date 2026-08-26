@@ -1,0 +1,30 @@
+@model ReturnRequestViewModel
+@{
+    ViewData["Title"] = "Return Process";
+}
+
+<h1>Return Process</h1>
+<p>Accept returned copies. If a reservation exists for the title, the oldest reserver is notified and the copy is set aside.
+   Overdue returns accrue a fine automatically &mdash; <a asp-controller="Fines" asp-action="Index">view outstanding fines</a>.</p>
+
+@if (ViewBag.ReservationNotice is string notice)
+{
+    <div class="alert alert-info" role="alert">
+        <strong>Reservation:</strong> @notice<br />
+        <strong>Notified:</strong> @ViewBag.NotifiedBorrower
+    </div>
+}
+
+<div class="card">
+    <form asp-action="Process" method="post">
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+        <div class="form-group">
+            <label asp-for="AccessionNumber"></label>
+            <input asp-for="AccessionNumber" placeholder="e.g. 005.5-0001-01" />
+            <span asp-validation-for="AccessionNumber" class="field-validation-error"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Accept Return</button>
+    </form>
+</div>

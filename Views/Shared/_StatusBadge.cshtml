@@ -1,0 +1,10 @@
+@model CopyStatusDetail
+@{
+    var badgeClass = Model.Availability == CopyAvailability.Lost ? "badge-lost"
+        : Model.Availability == CopyAvailability.Withdrawn ? "badge-withdrawn"
+        : Model.CopyType == CopyType.Reference ? "badge-reference"
+        : Model.Availability == CopyAvailability.Available ? "badge-available"
+        : Model.Availability == CopyAvailability.OnLoan ? "badge-loan"
+        : "badge-reserved";
+}
+<span class="badge @badgeClass">@Model.StatusDescription</span>

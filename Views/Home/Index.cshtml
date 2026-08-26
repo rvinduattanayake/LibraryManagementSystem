@@ -1,0 +1,63 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["BodyClass"] = "dashboard-bg";
+}
+
+<div class="text-center">
+    <h1>Library Dashboard</h1>
+    <p class="text-muted">Manage loans, returns, reservations, inquiries, and catalogue registration.</p>
+</div>
+
+<div class="grid mt-lg">
+    <div class="stat-card">
+        <div class="value">@ViewBag.BookCount</div>
+        <div class="label">Book Titles</div>
+    </div>
+    <div class="stat-card">
+        <div class="value">@ViewBag.CopyCount</div>
+        <div class="label">Physical Copies</div>
+    </div>
+    <div class="stat-card">
+        <div class="value">@ViewBag.BorrowerCount</div>
+        <div class="label">Registered Borrowers</div>
+    </div>
+    <div class="stat-card">
+        <div class="value">@ViewBag.ActiveLoans</div>
+        <div class="label">Active Loans</div>
+    </div>
+    <div class="stat-card">
+        <div class="value">@ViewBag.PendingLoans</div>
+        <div class="label">Pending Loan Requests</div>
+    </div>
+    <div class="stat-card">
+        <div class="value">@ViewBag.Reservations</div>
+        <div class="label">Active Reservations</div>
+    </div>
+</div>
+
+<div class="process-links mt-lg">
+    <a asp-controller="Books" asp-action="Register" class="process-link">
+        <strong>Book Registration</strong>
+        <span>Register new titles and up to @LibraryConstants.MaxCopiesPerTitle copies per book number.</span>
+    </a>
+    <a asp-controller="Users" asp-action="Register" class="process-link">
+        <strong>User Registration</strong>
+        <span>Register new borrowers with user number and national ID.</span>
+    </a>
+    <a asp-controller="Loans" asp-action="Index" class="process-link">
+        <strong>Loan Process</strong>
+        <span>Submit and approve loans (max @LibraryConstants.MaxBooksPerBorrower books, @LibraryConstants.LoanPeriodDays-day period).</span>
+    </a>
+    <a asp-controller="Returns" asp-action="Index" class="process-link">
+        <strong>Return Process</strong>
+        <span>Accept returns and notify reserved members.</span>
+    </a>
+    <a asp-controller="Reservations" asp-action="Index" class="process-link">
+        <strong>Reservation Process</strong>
+        <span>Place and manage title reservations (FIFO queue).</span>
+    </a>
+    <a asp-controller="Inquiry" asp-action="Index" class="process-link">
+        <strong>Inquiry Process</strong>
+        <span>Search availability by accession number, title, or author.</span>
+    </a>
+</div>

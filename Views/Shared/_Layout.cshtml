@@ -1,0 +1,112 @@
+@functions {
+    bool IsActive(string controller) =>
+        string.Equals(ViewContext.RouteData.Values["controller"]?.ToString(), controller, StringComparison.OrdinalIgnoreCase);
+}
+@{
+    var isLibrarian = User.IsInRole("Librarian");
+    var isMember = User.IsInRole("Member");
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Library circulation system for book registration, borrower registration, loans, returns, reservations, and catalogue inquiry." />
+    <title>@ViewData["Title"] - Library Management System</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="@ViewData["BodyClass"]">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" asp-controller="Home" asp-action="Index">Library Management System</a>
+            <nav class="main-nav" aria-label="Main">
+                <a asp-controller="Home" asp-action="Index"
+                   class="@(IsActive("Home") ? "active" : null)"
+                   aria-current="@(IsActive("Home") ? "page" : null)">Dashboard</a>
+                @if (isLibrarian)
+                {
+                    <a asp-controller="Books" asp-action="Register"
+                       class="@(IsActive("Books") ? "active" : null)"
+                       aria-current="@(IsActive("Books") ? "page" : null)">Register Book</a>
+                    <a asp-controller="Users" asp-action="Register"
+                       class="@(IsActive("Users") ? "active" : null)"
+                       aria-current="@(IsActive("Users") ? "page" : null)">Register User</a>
+                }
+                @if (isMember)
+                {
+                    <a asp-controller="Member" asp-action="MyLoans"
+                       class="@(IsActive("Member") && ViewContext.RouteData.Values["action"]?.ToString() == "MyLoans" ? "active" : null)">My Loans</a>
+                    <a asp-controller="Member" asp-action="MyReservations"
+                       class="@(IsActive("Member") && ViewContext.RouteData.Values["action"]?.ToString() == "MyReservations" ? "active" : null)">My Reservations</a>
+                    <a asp-controller="Member" asp-action="MyFines"
+                       class="@(IsActive("Member") && ViewContext.RouteData.Values["action"]?.ToString() == "MyFines" ? "active" : null)">My Fines</a>
+                    <a asp-controller="Member" asp-action="MyNotifications"
+                       class="@(IsActive("Member") && ViewContext.RouteData.Values["action"]?.ToString() == "MyNotifications" ? "active" : null)">My Notifications</a>
+                }
+                @if (!isMember)
+                {
+                    <a asp-controller="Loans" asp-action="Index"
+                       class="@(IsActive("Loans") ? "active" : null)"
+                       aria-current="@(IsActive("Loans") ? "page" : null)">Loans</a>
+                }
+                @if (isLibrarian)
+                {
+                    <a asp-controller="Returns" asp-action="Index"
+                       class="@(IsActive("Returns") ? "active" : null)"
+                       aria-current="@(IsActive("Returns") ? "page" : null)">Returns</a>
+                    <a asp-controller="Notifications" asp-action="Index"
+                       class="@(IsActive("Notifications") ? "active" : null)"
+                       aria-current="@(IsActive("Notifications") ? "page" : null)">Notifications</a>
+                    <a asp-controller="Reports" asp-action="Index"
+                       class="@(IsActive("Reports") ? "active" : null)"
+                       aria-current="@(IsActive("Reports") ? "page" : null)">Reports</a>
+                }
+                @if (!isMember)
+                {
+                    <a asp-controller="Reservations" asp-action="Index"
+                       class="@(IsActive("Reservations") ? "active" : null)"
+                       aria-current="@(IsActive("Reservations") ? "page" : null)">Reservations</a>
+                }
+                <a asp-controller="Inquiry" asp-action="Index"
+                   class="@(IsActive("Inquiry") ? "active" : null)"
+                   aria-current="@(IsActive("Inquiry") ? "page" : null)">Inquiry</a>
+            </nav>
+            <div class="nav-auth">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <span class="nav-user">@User.Identity!.Name</span>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="inline-form">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-link btn-sm">Sign out</button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="RegisterMember" class="btn btn-sm btn-link">Become a member</a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-primary">Librarian sign in</a>
+                }
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container main-content">
+        <partial name="_AlertBanner" />
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>Library Management System &mdash; Loan, Return, Reservation, Inquiry, Book &amp; User Registration</p>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

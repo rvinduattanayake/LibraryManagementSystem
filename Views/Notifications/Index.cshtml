@@ -1,0 +1,66 @@
+@{
+    ViewData["Title"] = "Notifications";
+    var notificationPage = ViewBag.Notifications as PagedResult<NotificationListItemViewModel> ?? new();
+    var notifications = notificationPage.Items;
+}
+
+<h1>Notifications</h1>
+<p>Pickup notices generated when a reserved title is returned, plus due-date reminders. Pickup holds that go
+   uncollected within @LibraryConstants.PickupWindowDays days are released automatically, and due-date reminders
+   run automatically every few hours &mdash; both can also be triggered manually below.</p>
+
+<div style="display:flex; gap:0.75rem; margin-bottom: 1.5rem;">
+    <form asp-action="ReleaseExpiredHolds" method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary btn-sm">Release expired pickup holds now</button>
+    </form>
+    <form asp-action="SendDueSoonReminders" method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary btn-sm">Send due-date reminders now</button>
+    </form>
+</div>
+
+<div class="card">
+    @if (notifications.Count == 0)
+    {
+        <p>No notifications.</p>
+    }
+    else
+    {
+        <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Borrower</th>
+                    <th>Message</th>
+                    <th>Created</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var n in notifications)
+            {
+                <tr>
+                    <td>@n.BorrowerName (@n.UserNumber)</td>
+                    <td>@n.Message</td>
+                    <td>@n.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td><span class="badge @(n.IsRead ? "badge-read" : "badge-unread")">@(n.IsRead ? "Read" : "Unread")</span></td>
+                    <td>
+                        @if (!n.IsRead)
+                        {
+                            <form asp-action="MarkAsRead" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@n.Id" />
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-primary">Mark as read</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        </div>
+        <partial name="_Pager" model="notificationPage" />
+    }
+</div>

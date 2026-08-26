@@ -1,0 +1,18 @@
+# Build artifacts
+bin/
+obj/
+
+# SQLite dev database (regenerated automatically via EF Core migrations on first run)
+*.db
+*.db-shm
+*.db-wal
+
+# IDE / tooling
+.vs/
+.vscode/
+.claude/
+*.user
+
+# OS
+.DS_Store
+Thumbs.db

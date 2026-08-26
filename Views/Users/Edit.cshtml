@@ -1,0 +1,56 @@
+@model BorrowerEditViewModel
+@{
+    ViewData["Title"] = "Edit Borrower";
+}
+
+<h1>Edit Borrower</h1>
+<p>User number and national ID are fixed identifiers; only contact and personal details can be corrected here.</p>
+
+<div class="card" style="max-width: 520px;">
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+        <div class="form-group">
+            <label>User Number</label>
+            <input value="@Model.UserNumber" disabled />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" />
+            <span asp-validation-for="Name" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Sex"></label>
+            <select asp-for="Sex" asp-items="Html.GetEnumSelectList<Sex>()"></select>
+        </div>
+
+        <div class="form-group">
+            <label>National ID Number</label>
+            <input value="@Model.NationalIdNumber" disabled />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Address"></label>
+            <textarea asp-for="Address"></textarea>
+            <span asp-validation-for="Address" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" type="email" />
+            <span asp-validation-for="Email" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Phone"></label>
+            <input asp-for="Phone" placeholder="Optional" />
+            <span asp-validation-for="Phone" class="field-validation-error"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="Index" class="btn btn-sm" style="margin-left: 0.5rem;">Cancel</a>
+    </form>
+</div>

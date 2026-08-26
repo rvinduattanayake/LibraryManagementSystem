@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "My Fines";
+    var finePage = ViewBag.Fines as PagedResult<FineListItemViewModel> ?? new();
+    var fines = finePage.Items;
+}
+
+<h1>My Fines</h1>
+<p>Overdue fines are @LibraryConstants.FinePerDayOverdue.ToString("C") per day late, calculated automatically when a book is returned. Pay outstanding fines at the front desk.</p>
+
+<div class="card">
+    @if (fines.Count == 0)
+    {
+        <p>You have no fines on record.</p>
+    }
+    else
+    {
+        <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Copy</th>
+                    <th>Due</th>
+                    <th>Returned</th>
+                    <th>Fine</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var fine in fines)
+            {
+                <tr>
+                    <td>@fine.BookTitle</td>
+                    <td>@fine.AccessionNumber</td>
+                    <td>@fine.DueDate.ToString("yyyy-MM-dd")</td>
+                    <td>@fine.ReturnedAt.ToString("yyyy-MM-dd")</td>
+                    <td>@fine.FineAmount.ToString("C")</td>
+                    <td><span class="badge @(fine.IsPaid ? "badge-available" : "badge-lost")">@(fine.IsPaid ? "Paid" : "Unpaid")</span></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        </div>
+        <partial name="_Pager" model="finePage" />
+    }
+</div>

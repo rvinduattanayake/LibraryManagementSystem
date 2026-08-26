@@ -1,0 +1,79 @@
+@model ReservationRequestViewModel
+@{
+    ViewData["Title"] = "Reservation Process";
+    var reservationPage = ViewBag.Reservations as PagedResult<ReservationListItemViewModel> ?? new();
+    var reservations = reservationPage.Items;
+}
+
+<h1>Reservation Process</h1>
+<p>Reserve a title when no borrowable copy is available. On return, the oldest reservation is fulfilled (FIFO).</p>
+
+<div class="two-col">
+    <div class="card">
+        <h2>Place Reservation</h2>
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+            <div class="form-group">
+                <label asp-for="UserNumber"></label>
+                <input asp-for="UserNumber" />
+                <span asp-validation-for="UserNumber" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="BookSearch"></label>
+                <input asp-for="BookSearch" placeholder="Book number, title, or author" />
+                <span asp-validation-for="BookSearch" class="field-validation-error"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Reserve Title</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Active Reservations (FIFO order)</h2>
+        @if (!User.IsInRole("Librarian"))
+        {
+            <p class="text-muted"><a asp-controller="Account" asp-action="Login">Sign in as a librarian</a> to view and manage the reservation queue.</p>
+        }
+        else if (reservations.Count == 0)
+        {
+            <p>No active reservations.</p>
+        }
+        else
+        {
+            <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Borrower</th>
+                        <th>Title</th>
+                        <th>Book No.</th>
+                        <th>Reserved</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var r in reservations)
+                {
+                    <tr>
+                        <td>@r.BorrowerName (@r.UserNumber)</td>
+                        <td>@r.BookTitle</td>
+                        <td>@r.BookNumber</td>
+                        <td>@r.ReservedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>
+                            <form asp-action="Cancel" method="post" data-confirm="Cancel the reservation for '@r.BookTitle' held by @r.BorrowerName?">
+                                <input type="hidden" name="id" value="@r.Id" />
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </div>
+            <partial name="_Pager" model="reservationPage" />
+        }
+    </div>
+</div>

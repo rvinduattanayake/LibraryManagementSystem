@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Book Catalogue";
+    var bookPage = ViewBag.Books as PagedResult<BookListItemViewModel> ?? new();
+    var books = bookPage.Items;
+}
+
+<h1>Book Catalogue</h1>
+<p><a asp-action="Register" class="btn btn-primary btn-sm">Register a new title</a></p>
+
+<div class="card">
+    @if (books.Count == 0)
+    {
+        <p>No book titles registered yet.</p>
+    }
+    else
+    {
+        <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Book No.</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Copies</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var book in books)
+            {
+                <tr>
+                    <td>@book.BookNumber</td>
+                    <td>@book.Title</td>
+                    <td>@book.Author</td>
+                    <td>@book.TotalCopies</td>
+                    <td><a asp-action="Edit" asp-route-id="@book.Id" class="btn btn-sm btn-primary">Edit</a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        </div>
+        <partial name="_Pager" model="bookPage" />
+    }
+</div>

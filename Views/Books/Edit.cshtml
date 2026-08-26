@@ -1,0 +1,118 @@
+@model BookEditViewModel
+@{
+    ViewData["Title"] = "Edit Book";
+}
+
+<h1>Edit Book</h1>
+<p>Book number and accession numbers are fixed once copies exist; only catalogue details can be corrected here.</p>
+
+<div class="card" style="max-width: 520px;">
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+        <div class="form-group">
+            <label>Book Number</label>
+            <input value="@Model.BookNumber" disabled />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Title"></label>
+            <input asp-for="Title" />
+            <span asp-validation-for="Title" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Author"></label>
+            <input asp-for="Author" />
+            <span asp-validation-for="Author" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Isbn"></label>
+            <input asp-for="Isbn" placeholder="e.g. 978-0-470-03649-5" />
+            <span asp-validation-for="Isbn" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Publisher"></label>
+            <input asp-for="Publisher" />
+            <span asp-validation-for="Publisher" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Genre"></label>
+            <input asp-for="Genre" placeholder="e.g. Software Engineering" />
+            <span asp-validation-for="Genre" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description" placeholder="Short catalogue description (optional)"></textarea>
+            <span asp-validation-for="Description" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="CoverImageUrl"></label>
+            <input asp-for="CoverImageUrl" placeholder="https://..." />
+            <span asp-validation-for="CoverImageUrl" class="field-validation-error"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="Index" class="btn btn-sm" style="margin-left: 0.5rem;">Cancel</a>
+    </form>
+</div>
+
+<div class="card">
+    <h2>Copies</h2>
+    <p class="text-muted">Mark a copy Lost or Withdrawn to retire it from circulation, or restore it to Available. A copy must be returned before its status can be changed.</p>
+    @if (Model.Copies.Count == 0)
+    {
+        <p>No copies registered for this title.</p>
+    }
+    else
+    {
+        <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Accession No.</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var copy in Model.Copies)
+            {
+                <tr>
+                    <td>@copy.AccessionNumber</td>
+                    <td>@copy.CopyType</td>
+                    <td><partial name="_StatusBadge" model="copy" /></td>
+                    <td>
+                        @if (copy.Availability is CopyAvailability.Available or CopyAvailability.Lost or CopyAvailability.Withdrawn)
+                        {
+                            <form asp-controller="Books" asp-action="UpdateCopyStatus" method="post" style="display:inline-flex; gap:0.4rem;">
+                                <input type="hidden" name="bookId" value="@Model.Id" />
+                                <input type="hidden" name="copyId" value="@copy.Id" />
+                                @Html.AntiForgeryToken()
+                                <select name="status" style="width:auto;">
+                                    <option value="Available" selected="@(copy.Availability == CopyAvailability.Available)">Available</option>
+                                    <option value="Lost" selected="@(copy.Availability == CopyAvailability.Lost)">Lost</option>
+                                    <option value="Withdrawn" selected="@(copy.Availability == CopyAvailability.Withdrawn)">Withdrawn</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Return the copy first</span>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        </div>
+    }
+</div>

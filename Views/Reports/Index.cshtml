@@ -1,0 +1,136 @@
+@model ReportsViewModel
+@{
+    ViewData["Title"] = "Reports";
+}
+
+<h1>Reports</h1>
+<p class="text-muted">Circulation snapshot as of now.</p>
+
+<div class="report-stats">
+    <div class="stat-card">
+        <div class="value">@Model.ActiveLoanCount</div>
+        <div class="label">Active loans</div>
+    </div>
+    <div class="stat-card">
+        <div class="value">@Model.OverdueLoans.Count</div>
+        <div class="label">Overdue loans</div>
+    </div>
+    <div class="stat-card">
+        <div class="value">@Model.TotalOutstandingFines.ToString("C")</div>
+        <div class="label">Outstanding fines (@Model.OutstandingFineCount)</div>
+    </div>
+    <div class="stat-card">
+        <div class="value">@Model.TotalActiveReservations</div>
+        <div class="label">Active reservations</div>
+    </div>
+</div>
+
+<div class="report-grid">
+
+    <div class="card">
+        <h2>Overdue Loans</h2>
+        @if (Model.OverdueLoans.Count == 0)
+        {
+            <p>No loans are currently overdue.</p>
+        }
+        else
+        {
+            <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Borrower</th>
+                        <th>Title</th>
+                        <th>Due</th>
+                        <th>Days overdue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var loan in Model.OverdueLoans)
+                {
+                    <tr>
+                        <td>@loan.BorrowerName (@loan.UserNumber)</td>
+                        <td>@loan.BookTitle</td>
+                        <td>@loan.DueDate.ToString("yyyy-MM-dd")</td>
+                        <td>@loan.DaysOverdue</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </div>
+            <p style="margin-top:1rem; margin-bottom:0;"><a asp-controller="Returns" asp-action="Index">Process a return</a></p>
+        }
+    </div>
+
+    <div class="card">
+        <h2>Most-Borrowed Titles</h2>
+        @if (Model.PopularTitles.Count == 0)
+        {
+            <p>No loans recorded yet.</p>
+        }
+        else
+        {
+            <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Book No.</th>
+                        <th>Loans</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var title in Model.PopularTitles)
+                {
+                    <tr>
+                        <td>@title.Title</td>
+                        <td>@title.BookNumber</td>
+                        <td>@title.LoanCount</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </div>
+        }
+    </div>
+
+    <div class="card">
+        <h2>Reservation Backlog</h2>
+        @if (Model.ReservationBacklog.Count == 0)
+        {
+            <p>No active reservations.</p>
+        }
+        else
+        {
+            <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Book No.</th>
+                        <th>Reservations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.ReservationBacklog)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.BookNumber</td>
+                        <td>@item.ReservationCount</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </div>
+            <p style="margin-top:1rem; margin-bottom:0;"><a asp-controller="Reservations" asp-action="Index">Manage reservations</a></p>
+        }
+    </div>
+
+    <div class="card">
+        <h2>Outstanding Fines</h2>
+        <p>@Model.OutstandingFineCount unpaid fine(s) totalling @Model.TotalOutstandingFines.ToString("C").</p>
+        <p style="margin-bottom:0;"><a asp-controller="Fines" asp-action="Index">View and settle fines</a></p>
+    </div>
+
+</div>

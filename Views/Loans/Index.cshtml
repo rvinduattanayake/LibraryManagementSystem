@@ -1,0 +1,84 @@
+@model LoanRequestViewModel
+@{
+    ViewData["Title"] = "Loan Process";
+    var pendingPage = ViewBag.PendingLoans as PagedResult<LoanActionViewModel> ?? new();
+    var pendingLoans = pendingPage.Items;
+}
+
+<h1>Loan Process</h1>
+<p>Borrowers may have at most <strong>@LibraryConstants.MaxBooksPerBorrower</strong> books on loan.
+   Loans are for <strong>@LibraryConstants.LoanPeriodDays days</strong>. Overdue borrowers cannot borrow.</p>
+
+<div class="two-col">
+    <div class="card">
+        <h2>Submit Loan Request</h2>
+        <form asp-action="SubmitRequest" method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+            <div class="form-group">
+                <label asp-for="UserNumber"></label>
+                <input asp-for="UserNumber" />
+                <span asp-validation-for="UserNumber" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AccessionNumbers"></label>
+                <textarea asp-for="AccessionNumbers" placeholder="Enter accession numbers, one per line"></textarea>
+                <span asp-validation-for="AccessionNumbers" class="field-validation-error"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit for Librarian Approval</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Pending Requests</h2>
+        @if (!User.IsInRole("Librarian"))
+        {
+            <p class="text-muted"><a asp-controller="Account" asp-action="Login">Sign in as a librarian</a> to view and confirm pending requests.</p>
+        }
+        else if (pendingLoans.Count == 0)
+        {
+            <p>No pending loan requests.</p>
+        }
+        else
+        {
+            <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Borrower</th>
+                        <th>Copy</th>
+                        <th>Title</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var loan in pendingLoans)
+                {
+                    <tr>
+                        <td>@loan.BorrowerName</td>
+                        <td>@loan.AccessionNumber</td>
+                        <td>@loan.BookTitle</td>
+                        <td>
+                            <form asp-action="Confirm" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@loan.LoanId" />
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-success btn-sm">Confirm</button>
+                            </form>
+                            <form asp-action="Cancel" method="post" style="display:inline"
+                                  data-confirm="Cancel the loan request for '@loan.BookTitle' (@loan.AccessionNumber)?">
+                                <input type="hidden" name="id" value="@loan.LoanId" />
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </div>
+            <partial name="_Pager" model="pendingPage" />
+        }
+    </div>
+</div>

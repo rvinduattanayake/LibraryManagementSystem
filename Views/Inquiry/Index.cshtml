@@ -1,0 +1,126 @@
+@model InquirySearchViewModel
+@{
+    ViewData["Title"] = "Inquiry Process";
+    var resultPage = ViewBag.Results as PagedResult<InquiryResultViewModel>;
+    var facets = ViewBag.Facets as CatalogueFacets ?? new();
+}
+
+<h1>Book Availability Inquiry</h1>
+<p>Search by accession number, title (partial or full), author (partial or full), or genre. Results are bookmarkable — the search terms live in the page URL.</p>
+
+<datalist id="title-suggestions">
+    @foreach (var t in facets.TitleSuggestions)
+    {
+        <option value="@t"></option>
+    }
+</datalist>
+<datalist id="author-suggestions">
+    @foreach (var a in facets.AuthorSuggestions)
+    {
+        <option value="@a"></option>
+    }
+</datalist>
+
+<div class="card">
+    <form asp-action="Index" method="get">
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+        <div class="form-group">
+            <label asp-for="AccessionNumber"></label>
+            <input asp-for="AccessionNumber" />
+            <span asp-validation-for="AccessionNumber" class="field-validation-error"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Title"></label>
+            <input asp-for="Title" list="title-suggestions" autocomplete="off" />
+            <span asp-validation-for="Title" class="field-validation-error"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Author"></label>
+            <input asp-for="Author" list="author-suggestions" autocomplete="off" />
+            <span asp-validation-for="Author" class="field-validation-error"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Genre"></label>
+            <select asp-for="Genre">
+                <option value="">Any genre</option>
+                @foreach (var genre in facets.Genres)
+                {
+                    <option value="@genre">@genre</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label style="display:flex; align-items:center; gap:0.5rem;">
+                <input asp-for="AvailableOnly" style="width:auto;" />
+                Only show titles with a copy available right now
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary">Search Catalogue</button>
+    </form>
+</div>
+
+@if (resultPage is not null)
+{
+    if (resultPage.Items.Count == 0)
+    {
+        <div class="alert alert-info">No matching books found in the catalogue.</div>
+    }
+    else
+    {
+        foreach (var book in resultPage.Items)
+        {
+            <div class="card book-result">
+                @if (!string.IsNullOrWhiteSpace(book.CoverImageUrl))
+                {
+                    <img src="@book.CoverImageUrl" alt="Cover of @book.Title" class="book-cover" />
+                }
+                <div class="book-result-body">
+                <h2>@book.Title @if (!string.IsNullOrWhiteSpace(book.Genre)) { <span class="badge badge-reference">@book.Genre</span> }</h2>
+                <p><strong>Author:</strong> @book.Author &nbsp;|&nbsp;
+                   <strong>Book No.:</strong> @book.BookNumber &nbsp;|&nbsp;
+                   <strong>Classification:</strong> @book.Classification</p>
+                <p><strong>Publisher:</strong> @book.Publisher</p>
+                @if (!string.IsNullOrWhiteSpace(book.Description))
+                {
+                    <p class="text-muted">@book.Description</p>
+                }
+                <p><strong>Status:</strong> @book.Summary</p>
+                <p>
+                    Total: @book.TotalCopies &nbsp;
+                    Available: @book.AvailableCopies &nbsp;
+                    On loan: @book.OnLoanCopies &nbsp;
+                    Awaiting pickup: @book.ReservedCopies &nbsp;
+                    Reference: @book.ReferenceCopies
+                    @if (book.LostCopies + book.WithdrawnCopies > 0)
+                    {
+                        <text>&nbsp; Lost: @book.LostCopies &nbsp; Withdrawn: @book.WithdrawnCopies</text>
+                    }
+                </p>
+
+                <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Accession No.</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var copy in book.CopyDetails)
+                    {
+                        <tr>
+                            <td>@copy.AccessionNumber</td>
+                            <td>@copy.CopyType</td>
+                            <td><partial name="_StatusBadge" model="copy" /></td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+                </div>
+                </div>
+            </div>
+        }
+        <partial name="_Pager" model="resultPage" />
+    }
+}

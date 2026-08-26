@@ -1,0 +1,84 @@
+@model MemberLoanRequestViewModel
+@{
+    ViewData["Title"] = "My Loans";
+    var loanPage = ViewBag.Loans as PagedResult<LoanActionViewModel> ?? new();
+    var loans = loanPage.Items;
+}
+@functions {
+    string StatusBadgeClass(LoanStatus status) => status switch
+    {
+        LoanStatus.Pending => "badge-status-pending",
+        LoanStatus.Active => "badge-status-active",
+        LoanStatus.Returned => "badge-status-returned",
+        _ => "badge-status-cancelled"
+    };
+}
+
+<h1>My Loans</h1>
+<p>Borrow up to <strong>@LibraryConstants.MaxBooksPerBorrower</strong> books at a time for <strong>@LibraryConstants.LoanPeriodDays days</strong>.
+   Find accession numbers via <a asp-controller="Inquiry" asp-action="Index">Inquiry</a>.</p>
+
+<div class="two-col">
+    <div class="card">
+        <h2>Request a Loan</h2>
+        <form asp-action="SubmitLoanRequest" method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+            <div class="form-group">
+                <label asp-for="AccessionNumbers"></label>
+                <textarea asp-for="AccessionNumbers" placeholder="Enter accession numbers, one per line"></textarea>
+                <span asp-validation-for="AccessionNumbers" class="field-validation-error"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit for Librarian Approval</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>My Loan History</h2>
+        @if (loans.Count == 0)
+        {
+            <p>You have no loan history yet.</p>
+        }
+        else
+        {
+            <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Copy</th>
+                        <th>Status</th>
+                        <th>Due</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var loan in loans)
+                {
+                    <tr>
+                        <td>@loan.BookTitle</td>
+                        <td>@loan.AccessionNumber</td>
+                        <td><span class="badge @StatusBadgeClass(loan.Status)">@loan.Status</span></td>
+                        <td>@(loan.DueDate?.ToString("yyyy-MM-dd") ?? "—")</td>
+                        <td>
+                            @if (loan.Status == LoanStatus.Pending)
+                            {
+                                <form asp-action="CancelMyLoan" method="post" data-confirm="Cancel the loan request for '@loan.BookTitle'?">
+                                    <input type="hidden" name="id" value="@loan.LoanId" />
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                </form>
+                            }
+                            @if (loan.FineAmount > 0)
+                            {
+                                <div class="text-muted" style="margin-top:0.25rem;">Fine: @loan.FineAmount.ToString("C")</div>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </div>
+            <partial name="_Pager" model="loanPage" />
+        }
+    </div>
+</div>
