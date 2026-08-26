@@ -3,78 +3,88 @@
     ViewData["Title"] = "Book Registration";
 }
 
-<h1>Book Registration</h1>
-<p>Register a new book title and its physical copies. Maximum @LibraryConstants.MaxCopiesPerTitle copies per book number.
-   <a asp-action="Index">View the full catalogue</a> to edit an existing title.</p>
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("plus")</span>
+    <div class="page-header-text">
+        <h1>Book Registration</h1>
+        <p>Register a new book title and its physical copies. Maximum @LibraryConstants.MaxCopiesPerTitle copies per book number.
+           <a asp-action="Index">View the full catalogue</a> to edit an existing title.</p>
+    </div>
+</div>
+
+<div class="alert alert-info">
+  @Icon.Svg("document-text")
+  <span><strong>Book number:</strong> Classification + sequence (e.g. <code>005.5-0001</code>). &nbsp;
+  <strong>Accession number:</strong> Book number + copy suffix (e.g. <code>005.5-0001-01</code>).</span>
+</div>
 
 <div class="card">
     <form asp-action="Register" method="post">
         <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
 
-        <div class="form-group">
-            <label asp-for="Classification"></label>
-            <input asp-for="Classification" placeholder="e.g. 005.5" />
-            <span asp-validation-for="Classification" class="field-validation-error"></span>
+        <div class="form-grid">
+            <div class="form-group">
+                <label asp-for="Classification"></label>
+                <input asp-for="Classification" placeholder="e.g. 005.5" />
+                <span asp-validation-for="Classification" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Title"></label>
+                <input asp-for="Title" />
+                <span asp-validation-for="Title" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Author"></label>
+                <input asp-for="Author" />
+                <span asp-validation-for="Author" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Isbn"></label>
+                <input asp-for="Isbn" placeholder="e.g. 978-0-470-03649-5" />
+                <span asp-validation-for="Isbn" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Publisher"></label>
+                <input asp-for="Publisher" />
+                <span asp-validation-for="Publisher" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Genre"></label>
+                <input asp-for="Genre" placeholder="e.g. Software Engineering" />
+                <span asp-validation-for="Genre" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group span-2">
+                <label asp-for="Description"></label>
+                <textarea asp-for="Description" placeholder="Short catalogue description (optional)"></textarea>
+                <span asp-validation-for="Description" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group span-2">
+                <label asp-for="CoverImageUrl"></label>
+                <input asp-for="CoverImageUrl" placeholder="https://..." />
+                <span asp-validation-for="CoverImageUrl" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="NumberOfCopies"></label>
+                <input asp-for="NumberOfCopies" type="number" min="1" max="@LibraryConstants.MaxCopiesPerTitle" />
+                <span asp-validation-for="NumberOfCopies" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CopyType"></label>
+                <select asp-for="CopyType" asp-items="Html.GetEnumSelectList<CopyType>()"></select>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label asp-for="Title"></label>
-            <input asp-for="Title" />
-            <span asp-validation-for="Title" class="field-validation-error"></span>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">@Icon.Svg("plus", "w-4 h-4") Register Book</button>
         </div>
-
-        <div class="form-group">
-            <label asp-for="Author"></label>
-            <input asp-for="Author" />
-            <span asp-validation-for="Author" class="field-validation-error"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Isbn"></label>
-            <input asp-for="Isbn" placeholder="e.g. 978-0-470-03649-5" />
-            <span asp-validation-for="Isbn" class="field-validation-error"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Publisher"></label>
-            <input asp-for="Publisher" />
-            <span asp-validation-for="Publisher" class="field-validation-error"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Genre"></label>
-            <input asp-for="Genre" placeholder="e.g. Software Engineering" />
-            <span asp-validation-for="Genre" class="field-validation-error"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Description"></label>
-            <textarea asp-for="Description" placeholder="Short catalogue description (optional)"></textarea>
-            <span asp-validation-for="Description" class="field-validation-error"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="CoverImageUrl"></label>
-            <input asp-for="CoverImageUrl" placeholder="https://..." />
-            <span asp-validation-for="CoverImageUrl" class="field-validation-error"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="NumberOfCopies"></label>
-            <input asp-for="NumberOfCopies" type="number" min="1" max="@LibraryConstants.MaxCopiesPerTitle" />
-            <span asp-validation-for="NumberOfCopies" class="field-validation-error"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="CopyType"></label>
-            <select asp-for="CopyType" asp-items="Html.GetEnumSelectList<CopyType>()"></select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Register Book</button>
     </form>
-</div>
-
-<div class="alert alert-info">
-  <strong>Book number format:</strong> Classification + sequence (e.g. <code>005.5-0001</code>).<br />
-  <strong>Accession number format:</strong> Book number + copy suffix (e.g. <code>005.5-0001-01</code>).
 </div>

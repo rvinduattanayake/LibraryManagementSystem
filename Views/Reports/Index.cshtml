@@ -3,8 +3,13 @@
     ViewData["Title"] = "Reports";
 }
 
-<h1>Reports</h1>
-<p class="text-muted">Circulation snapshot as of now.</p>
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("chart-bar")</span>
+    <div class="page-header-text">
+        <h1>Reports</h1>
+        <p>Circulation snapshot as of now.</p>
+    </div>
+</div>
 
 <div class="report-stats">
     <div class="stat-card">
@@ -58,7 +63,7 @@
                 </tbody>
             </table>
             </div>
-            <p style="margin-top:1rem; margin-bottom:0;"><a asp-controller="Returns" asp-action="Index">Process a return</a></p>
+            <p class="mt-4 mb-0"><a asp-controller="Returns" asp-action="Index">Process a return</a></p>
         }
     </div>
 
@@ -123,14 +128,14 @@
                 </tbody>
             </table>
             </div>
-            <p style="margin-top:1rem; margin-bottom:0;"><a asp-controller="Reservations" asp-action="Index">Manage reservations</a></p>
+            <p class="mt-4 mb-0"><a asp-controller="Reservations" asp-action="Index">Manage reservations</a></p>
         }
     </div>
 
     <div class="card">
         <h2>Outstanding Fines</h2>
         <p>@Model.OutstandingFineCount unpaid fine(s) totalling @Model.TotalOutstandingFines.ToString("C").</p>
-        <p style="margin-bottom:0;"><a asp-controller="Fines" asp-action="Index">View and settle fines</a></p>
+        <p class="mb-0"><a asp-controller="Fines" asp-action="Index">View and settle fines</a></p>
     </div>
 
 </div>

@@ -1,63 +1,118 @@
 @{
     ViewData["Title"] = "Dashboard";
-    ViewData["BodyClass"] = "dashboard-bg";
 }
 
-<div class="text-center">
-    <h1>Library Dashboard</h1>
-    <p class="text-muted">Manage loans, returns, reservations, inquiries, and catalogue registration.</p>
-</div>
+@{
+    var overdueLoans = (int)(ViewBag.OverdueLoans ?? 0);
+}
 
-<div class="grid mt-lg">
-    <div class="stat-card">
-        <div class="value">@ViewBag.BookCount</div>
-        <div class="label">Book Titles</div>
-    </div>
-    <div class="stat-card">
-        <div class="value">@ViewBag.CopyCount</div>
-        <div class="label">Physical Copies</div>
-    </div>
-    <div class="stat-card">
-        <div class="value">@ViewBag.BorrowerCount</div>
-        <div class="label">Registered Borrowers</div>
-    </div>
-    <div class="stat-card">
-        <div class="value">@ViewBag.ActiveLoans</div>
-        <div class="label">Active Loans</div>
-    </div>
-    <div class="stat-card">
-        <div class="value">@ViewBag.PendingLoans</div>
-        <div class="label">Pending Loan Requests</div>
-    </div>
-    <div class="stat-card">
-        <div class="value">@ViewBag.Reservations</div>
-        <div class="label">Active Reservations</div>
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("home")</span>
+    <div class="page-header-text">
+        <h1>Library Dashboard</h1>
+        <p>Manage loans, returns, reservations, inquiries, and catalogue registration.</p>
     </div>
 </div>
 
-<div class="process-links mt-lg">
-    <a asp-controller="Books" asp-action="Register" class="process-link">
-        <strong>Book Registration</strong>
-        <span>Register new titles and up to @LibraryConstants.MaxCopiesPerTitle copies per book number.</span>
+@if (overdueLoans > 0)
+{
+    <div class="alert alert-error" role="alert">
+        @Icon.Svg("exclamation-triangle")
+        <span>
+            <strong>@overdueLoans loan@(overdueLoans == 1 ? "" : "s")</strong> @(overdueLoans == 1 ? "is" : "are") overdue.
+            <a asp-controller="Reports" asp-action="Index">Review overdue loans</a> or <a asp-controller="Returns" asp-action="Index">process a return</a>.
+        </span>
+    </div>
+}
+
+<h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Library at a glance</h2>
+<div class="stat-card-row">
+    <div class="stat-tile">
+        <span class="stat-tile-icon stat-tile-icon-primary">@Icon.Svg("book-open")</span>
+        <span class="stat-tile-body">
+            <span class="stat-tile-value">@ViewBag.BookCount</span>
+            <span class="stat-tile-label">Book Titles</span>
+        </span>
+    </div>
+    <div class="stat-tile">
+        <span class="stat-tile-icon stat-tile-icon-primary">@Icon.Svg("archive-box")</span>
+        <span class="stat-tile-body">
+            <span class="stat-tile-value">@ViewBag.CopyCount</span>
+            <span class="stat-tile-label">Physical Copies</span>
+        </span>
+    </div>
+    <div class="stat-tile">
+        <span class="stat-tile-icon stat-tile-icon-primary">@Icon.Svg("users")</span>
+        <span class="stat-tile-body">
+            <span class="stat-tile-value">@ViewBag.BorrowerCount</span>
+            <span class="stat-tile-label">Registered Borrowers</span>
+        </span>
+    </div>
+    <div class="stat-tile">
+        <span class="stat-tile-icon stat-tile-icon-success">@Icon.Svg("clock")</span>
+        <span class="stat-tile-body">
+            <span class="stat-tile-value">@ViewBag.ActiveLoans</span>
+            <span class="stat-tile-label">Active Loans</span>
+        </span>
+    </div>
+    <div class="stat-tile">
+        <span class="stat-tile-icon stat-tile-icon-warning">@Icon.Svg("queue-list")</span>
+        <span class="stat-tile-body">
+            <span class="stat-tile-value">@ViewBag.PendingLoans</span>
+            <span class="stat-tile-label">Pending Loan Requests</span>
+        </span>
+    </div>
+    <div class="stat-tile">
+        <span class="stat-tile-icon stat-tile-icon-warning">@Icon.Svg("bookmark")</span>
+        <span class="stat-tile-body">
+            <span class="stat-tile-value">@ViewBag.Reservations</span>
+            <span class="stat-tile-label">Active Reservations</span>
+        </span>
+    </div>
+</div>
+
+<h2 class="mb-3 mt-9 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Quick actions</h2>
+<div class="process-links">
+    <a asp-controller="Books" asp-action="Index" class="process-link">
+        <span class="process-link-icon">@Icon.Svg("book-open")</span>
+        <span class="process-link-body">
+            <strong>Book Catalogue</strong>
+            <span>Browse titles and copies, or register new titles (up to @LibraryConstants.MaxCopiesPerTitle copies per book number).</span>
+        </span>
     </a>
-    <a asp-controller="Users" asp-action="Register" class="process-link">
-        <strong>User Registration</strong>
-        <span>Register new borrowers with user number and national ID.</span>
+    <a asp-controller="Users" asp-action="Index" class="process-link">
+        <span class="process-link-icon">@Icon.Svg("users")</span>
+        <span class="process-link-body">
+            <strong>Borrowers</strong>
+            <span>Browse registered borrowers, or register a new one with user number and national ID.</span>
+        </span>
     </a>
     <a asp-controller="Loans" asp-action="Index" class="process-link">
-        <strong>Loan Process</strong>
-        <span>Submit and approve loans (max @LibraryConstants.MaxBooksPerBorrower books, @LibraryConstants.LoanPeriodDays-day period).</span>
+        <span class="process-link-icon">@Icon.Svg("clock")</span>
+        <span class="process-link-body">
+            <strong>Loan Process</strong>
+            <span>Submit and approve loans (max @LibraryConstants.MaxBooksPerBorrower books, @LibraryConstants.LoanPeriodDays-day period).</span>
+        </span>
     </a>
     <a asp-controller="Returns" asp-action="Index" class="process-link">
-        <strong>Return Process</strong>
-        <span>Accept returns and notify reserved members.</span>
+        <span class="process-link-icon">@Icon.Svg("arrow-uturn-left")</span>
+        <span class="process-link-body">
+            <strong>Return Process</strong>
+            <span>Accept returns and notify reserved members.</span>
+        </span>
     </a>
     <a asp-controller="Reservations" asp-action="Index" class="process-link">
-        <strong>Reservation Process</strong>
-        <span>Place and manage title reservations (FIFO queue).</span>
+        <span class="process-link-icon">@Icon.Svg("bookmark")</span>
+        <span class="process-link-body">
+            <strong>Reservation Process</strong>
+            <span>Place and manage title reservations (FIFO queue).</span>
+        </span>
     </a>
     <a asp-controller="Inquiry" asp-action="Index" class="process-link">
-        <strong>Inquiry Process</strong>
-        <span>Search availability by accession number, title, or author.</span>
+        <span class="process-link-icon">@Icon.Svg("magnifying-glass")</span>
+        <span class="process-link-body">
+            <strong>Inquiry Process</strong>
+            <span>Search availability by accession number, title, or author.</span>
+        </span>
     </a>
 </div>

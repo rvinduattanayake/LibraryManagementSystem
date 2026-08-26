@@ -4,8 +4,13 @@
     var fines = finePage.Items;
 }
 
-<h1>Outstanding Fines</h1>
-<p>Overdue fines are calculated automatically at return time (@LibraryConstants.FinePerDayOverdue.ToString("C") per day late).</p>
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("currency-dollar")</span>
+    <div class="page-header-text">
+        <h1>Outstanding Fines</h1>
+        <p>Overdue fines are calculated automatically at return time (@LibraryConstants.FinePerDayOverdue.ToString("C") per day late).</p>
+    </div>
+</div>
 
 <div class="card">
     @if (fines.Count == 0)
@@ -42,7 +47,7 @@
                         <form asp-action="MarkPaid" method="post" data-confirm="@confirmMessage">
                             <input type="hidden" name="loanId" value="@fine.LoanId" />
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-success">Mark paid</button>
+                            <button type="submit" class="btn btn-sm btn-success">@Icon.Svg("check-circle", "w-4 h-4") Mark paid</button>
                         </form>
                     </td>
                 </tr>

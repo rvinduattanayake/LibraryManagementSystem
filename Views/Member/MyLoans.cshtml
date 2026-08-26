@@ -14,9 +14,14 @@
     };
 }
 
-<h1>My Loans</h1>
-<p>Borrow up to <strong>@LibraryConstants.MaxBooksPerBorrower</strong> books at a time for <strong>@LibraryConstants.LoanPeriodDays days</strong>.
-   Find accession numbers via <a asp-controller="Inquiry" asp-action="Index">Inquiry</a>.</p>
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("queue-list")</span>
+    <div class="page-header-text">
+        <h1>My Loans</h1>
+        <p>Borrow up to <strong>@LibraryConstants.MaxBooksPerBorrower</strong> books at a time for <strong>@LibraryConstants.LoanPeriodDays days</strong>.
+           Find accession numbers via <a asp-controller="Inquiry" asp-action="Index">Inquiry</a>.</p>
+    </div>
+</div>
 
 <div class="two-col">
     <div class="card">
@@ -28,7 +33,7 @@
                 <textarea asp-for="AccessionNumbers" placeholder="Enter accession numbers, one per line"></textarea>
                 <span asp-validation-for="AccessionNumbers" class="field-validation-error"></span>
             </div>
-            <button type="submit" class="btn btn-primary">Submit for Librarian Approval</button>
+            <button type="submit" class="btn btn-primary">@Icon.Svg("queue-list", "w-4 h-4") Submit for Librarian Approval</button>
         </form>
     </div>
 
@@ -65,12 +70,12 @@
                                 <form asp-action="CancelMyLoan" method="post" data-confirm="Cancel the loan request for '@loan.BookTitle'?">
                                     <input type="hidden" name="id" value="@loan.LoanId" />
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                    <button type="submit" class="btn btn-sm btn-danger">@Icon.Svg("x-circle", "w-4 h-4") Cancel</button>
                                 </form>
                             }
                             @if (loan.FineAmount > 0)
                             {
-                                <div class="text-muted" style="margin-top:0.25rem;">Fine: @loan.FineAmount.ToString("C")</div>
+                                <div class="text-subtle mt-1">Fine: @loan.FineAmount.ToString("C")</div>
                             }
                         </td>
                     </tr>

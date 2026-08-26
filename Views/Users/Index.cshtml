@@ -4,8 +4,13 @@
     var borrowers = borrowerPage.Items;
 }
 
-<h1>Borrowers</h1>
-<p><a asp-action="Register" class="btn btn-primary btn-sm">Register a new borrower</a></p>
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("users")</span>
+    <div class="page-header-text">
+        <h1>Borrowers</h1>
+        <p><a asp-action="Register" class="btn btn-primary btn-sm">@Icon.Svg("user-plus", "w-4 h-4") Register a new borrower</a></p>
+    </div>
+</div>
 
 <div class="card">
     @if (borrowers.Count == 0)
@@ -31,7 +36,7 @@
                     <td>@borrower.UserNumber</td>
                     <td>@borrower.Name</td>
                     <td>@borrower.NationalIdNumber</td>
-                    <td><a asp-action="Edit" asp-route-id="@borrower.Id" class="btn btn-sm btn-primary">Edit</a></td>
+                    <td><a asp-action="Edit" asp-route-id="@borrower.Id" class="btn btn-sm btn-primary">@Icon.Svg("pencil-square", "w-4 h-4") Edit</a></td>
                 </tr>
             }
             </tbody>

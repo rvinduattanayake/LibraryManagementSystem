@@ -4,12 +4,17 @@
     var notifications = notificationPage.Items;
 }
 
-<h1>Notifications</h1>
-<p>Pickup notices generated when a reserved title is returned, plus due-date reminders. Pickup holds that go
-   uncollected within @LibraryConstants.PickupWindowDays days are released automatically, and due-date reminders
-   run automatically every few hours &mdash; both can also be triggered manually below.</p>
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("bell")</span>
+    <div class="page-header-text">
+        <h1>Notifications</h1>
+        <p>Pickup notices generated when a reserved title is returned, plus due-date reminders. Pickup holds that go
+           uncollected within @LibraryConstants.PickupWindowDays days are released automatically, and due-date reminders
+           run automatically every few hours &mdash; both can also be triggered manually below.</p>
+    </div>
+</div>
 
-<div style="display:flex; gap:0.75rem; margin-bottom: 1.5rem;">
+<div class="flex gap-3 mb-6">
     <form asp-action="ReleaseExpiredHolds" method="post">
         @Html.AntiForgeryToken()
         <button type="submit" class="btn btn-primary btn-sm">Release expired pickup holds now</button>
@@ -49,10 +54,10 @@
                     <td>
                         @if (!n.IsRead)
                         {
-                            <form asp-action="MarkAsRead" method="post" style="display:inline">
+                            <form asp-action="MarkAsRead" method="post" class="inline">
                                 <input type="hidden" name="id" value="@n.Id" />
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-sm btn-primary">Mark as read</button>
+                                <button type="submit" class="btn btn-sm btn-primary">@Icon.Svg("check-circle", "w-4 h-4") Mark as read</button>
                             </form>
                         }
                     </td>

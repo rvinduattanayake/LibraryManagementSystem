@@ -5,8 +5,13 @@
     var reservations = reservationPage.Items;
 }
 
-<h1>Reservation Process</h1>
-<p>Reserve a title when no borrowable copy is available. On return, the oldest reservation is fulfilled (FIFO).</p>
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("bookmark")</span>
+    <div class="page-header-text">
+        <h1>Reservation Process</h1>
+        <p>Reserve a title when no borrowable copy is available. On return, the oldest reservation is fulfilled (FIFO).</p>
+    </div>
+</div>
 
 <div class="two-col">
     <div class="card">
@@ -26,7 +31,7 @@
                 <span asp-validation-for="BookSearch" class="field-validation-error"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary">Reserve Title</button>
+            <button type="submit" class="btn btn-primary">@Icon.Svg("bookmark", "w-4 h-4") Reserve Title</button>
         </form>
     </div>
 
@@ -34,7 +39,7 @@
         <h2>Active Reservations (FIFO order)</h2>
         @if (!User.IsInRole("Librarian"))
         {
-            <p class="text-muted"><a asp-controller="Account" asp-action="Login">Sign in as a librarian</a> to view and manage the reservation queue.</p>
+            <p class="text-subtle"><a asp-controller="Account" asp-action="Login">Sign in as a librarian</a> to view and manage the reservation queue.</p>
         }
         else if (reservations.Count == 0)
         {
@@ -65,7 +70,7 @@
                             <form asp-action="Cancel" method="post" data-confirm="Cancel the reservation for '@r.BookTitle' held by @r.BorrowerName?">
                                 <input type="hidden" name="id" value="@r.Id" />
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                                <button type="submit" class="btn btn-danger btn-sm">@Icon.Svg("x-circle", "w-4 h-4") Cancel</button>
                             </form>
                         </td>
                     </tr>

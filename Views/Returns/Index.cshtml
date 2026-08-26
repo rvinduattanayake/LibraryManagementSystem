@@ -3,15 +3,21 @@
     ViewData["Title"] = "Return Process";
 }
 
-<h1>Return Process</h1>
-<p>Accept returned copies. If a reservation exists for the title, the oldest reserver is notified and the copy is set aside.
-   Overdue returns accrue a fine automatically &mdash; <a asp-controller="Fines" asp-action="Index">view outstanding fines</a>.</p>
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("arrow-uturn-left")</span>
+    <div class="page-header-text">
+        <h1>Return Process</h1>
+        <p>Accept returned copies. If a reservation exists for the title, the oldest reserver is notified and the copy is set aside.
+           Overdue returns accrue a fine automatically &mdash; <a asp-controller="Fines" asp-action="Index">view outstanding fines</a>.</p>
+    </div>
+</div>
 
 @if (ViewBag.ReservationNotice is string notice)
 {
     <div class="alert alert-info" role="alert">
-        <strong>Reservation:</strong> @notice<br />
-        <strong>Notified:</strong> @ViewBag.NotifiedBorrower
+        @Icon.Svg("bookmark")
+        <span><strong>Reservation:</strong> @notice<br />
+        <strong>Notified:</strong> @ViewBag.NotifiedBorrower</span>
     </div>
 }
 
@@ -25,6 +31,6 @@
             <span asp-validation-for="AccessionNumber" class="field-validation-error"></span>
         </div>
 
-        <button type="submit" class="btn btn-primary">Accept Return</button>
+        <button type="submit" class="btn btn-primary">@Icon.Svg("check-circle", "w-4 h-4") Accept Return</button>
     </form>
 </div>

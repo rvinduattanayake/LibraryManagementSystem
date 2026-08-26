@@ -5,8 +5,13 @@
     var reservations = reservationPage.Items;
 }
 
-<h1>My Reservations</h1>
-<p>Reserve a title when no borrowable copy is available. You'll be notified when a copy is set aside for you.</p>
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("bookmark")</span>
+    <div class="page-header-text">
+        <h1>My Reservations</h1>
+        <p>Reserve a title when no borrowable copy is available. You'll be notified when a copy is set aside for you.</p>
+    </div>
+</div>
 
 <div class="two-col">
     <div class="card">
@@ -18,7 +23,7 @@
                 <input asp-for="BookSearch" placeholder="Book number, title, or author" />
                 <span asp-validation-for="BookSearch" class="field-validation-error"></span>
             </div>
-            <button type="submit" class="btn btn-primary">Reserve Title</button>
+            <button type="submit" class="btn btn-primary">@Icon.Svg("bookmark", "w-4 h-4") Reserve Title</button>
         </form>
     </div>
 
@@ -51,7 +56,7 @@
                             <form asp-action="CancelMyReservation" method="post" data-confirm="Cancel your reservation for '@r.BookTitle'?">
                                 <input type="hidden" name="id" value="@r.Id" />
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                <button type="submit" class="btn btn-sm btn-danger">@Icon.Svg("x-circle", "w-4 h-4") Cancel</button>
                             </form>
                         </td>
                     </tr>

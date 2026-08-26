@@ -4,8 +4,13 @@
     var books = bookPage.Items;
 }
 
-<h1>Book Catalogue</h1>
-<p><a asp-action="Register" class="btn btn-primary btn-sm">Register a new title</a></p>
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("book-open")</span>
+    <div class="page-header-text">
+        <h1>Book Catalogue</h1>
+        <p><a asp-action="Register" class="btn btn-primary btn-sm">@Icon.Svg("plus", "w-4 h-4") Register a new title</a></p>
+    </div>
+</div>
 
 <div class="card">
     @if (books.Count == 0)
@@ -33,7 +38,7 @@
                     <td>@book.Title</td>
                     <td>@book.Author</td>
                     <td>@book.TotalCopies</td>
-                    <td><a asp-action="Edit" asp-route-id="@book.Id" class="btn btn-sm btn-primary">Edit</a></td>
+                    <td><a asp-action="Edit" asp-route-id="@book.Id" class="btn btn-sm btn-primary">@Icon.Svg("pencil-square", "w-4 h-4") Edit</a></td>
                 </tr>
             }
             </tbody>
