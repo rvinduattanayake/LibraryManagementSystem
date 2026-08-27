@@ -4,8 +4,13 @@
     var notifications = notificationPage.Items;
 }
 
-<h1>My Notifications</h1>
-<p>Pickup notices and due-date reminders appear here.</p>
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("bell")</span>
+    <div class="page-header-text">
+        <h1>My Notifications</h1>
+        <p>Pickup notices and due-date reminders appear here.</p>
+    </div>
+</div>
 
 <div class="card">
     @if (notifications.Count == 0)
@@ -34,10 +39,10 @@
                     <td>
                         @if (!n.IsRead)
                         {
-                            <form asp-action="MarkMyNotificationRead" method="post" style="display:inline">
+                            <form asp-action="MarkMyNotificationRead" method="post" class="inline">
                                 <input type="hidden" name="id" value="@n.Id" />
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-sm btn-primary">Mark as read</button>
+                                <button type="submit" class="btn btn-sm btn-primary">@Icon.Svg("check-circle", "w-4 h-4") Mark as read</button>
                             </form>
                         }
                     </td>

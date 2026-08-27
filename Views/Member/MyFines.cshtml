@@ -4,8 +4,13 @@
     var fines = finePage.Items;
 }
 
-<h1>My Fines</h1>
-<p>Overdue fines are @LibraryConstants.FinePerDayOverdue.ToString("C") per day late, calculated automatically when a book is returned. Pay outstanding fines at the front desk.</p>
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("currency-dollar")</span>
+    <div class="page-header-text">
+        <h1>My Fines</h1>
+        <p>Overdue fines are @LibraryConstants.FinePerDayOverdue.ToString("C") per day late, calculated automatically when a book is returned. Pay outstanding fines at the front desk.</p>
+    </div>
+</div>
 
 <div class="card">
     @if (fines.Count == 0)

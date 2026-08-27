@@ -16,3 +16,11 @@ obj/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local Tailwind CLI binary (downloaded, not source; rebuild via https://github.com/tailwindlabs/tailwindcss/releases)
+tailwindcss.exe
+
+# Local dev-server run artifacts
+run.log
+run.err.log
+run.pid

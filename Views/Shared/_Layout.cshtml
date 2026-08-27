@@ -1,10 +1,13 @@
 @functions {
     bool IsActive(string controller) =>
         string.Equals(ViewContext.RouteData.Values["controller"]?.ToString(), controller, StringComparison.OrdinalIgnoreCase);
+    bool IsActiveAction(string controller, string action) =>
+        IsActive(controller) && string.Equals(ViewContext.RouteData.Values["action"]?.ToString(), action, StringComparison.OrdinalIgnoreCase);
 }
 @{
     var isLibrarian = User.IsInRole("Librarian");
     var isMember = User.IsInRole("Member");
+    var favicon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%234f46e5'/%3E%3Cpath d='M12 6.5a6 6 0 00-4-1.5c-.7 0-1.4.12-2 .34v9.5c.66-.22 1.35-.34 2-.34a6 6 0 014 1.5m0-9.5a6 6 0 014-1.5c.7 0 1.4.12 2 .34v9.5a6.6 6.6 0 00-2-.34 6 6 0 00-4 1.5m0-9.5v9.5' stroke='white' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -13,95 +16,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Library circulation system for book registration, borrower registration, loans, returns, reservations, and catalogue inquiry." />
     <title>@ViewData["Title"] - Library Management System</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E" />
+    <link rel="icon" href="@favicon" />
+    <script>
+        (function () {
+            try {
+                var stored = localStorage.getItem('theme');
+                var dark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (dark) document.documentElement.classList.add('dark');
+            } catch (e) { }
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body class="@ViewData["BodyClass"]">
+<body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <header class="site-header">
-        <div class="container header-inner">
-            <a class="brand" asp-controller="Home" asp-action="Index">Library Management System</a>
-            <nav class="main-nav" aria-label="Main">
-                <a asp-controller="Home" asp-action="Index"
-                   class="@(IsActive("Home") ? "active" : null)"
-                   aria-current="@(IsActive("Home") ? "page" : null)">Dashboard</a>
+    <div class="app-shell">
+        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <a class="sidebar-logo" asp-controller="Home" asp-action="Index">
+                    <span class="brand-mark">@Icon.Svg("book-open")</span>
+                    <span>
+                        <span class="sidebar-logo-text">Library MS</span>
+                        <span class="sidebar-logo-sub">Circulation Desk</span>
+                    </span>
+                </a>
+                <button type="button" class="sidebar-close" id="sidebar-close" aria-label="Close menu">@Icon.Svg("x-mark")</button>
+            </div>
+
+            <nav class="sidebar-scroll" aria-label="Main">
+                <div class="sidebar-section">General</div>
                 @if (isLibrarian)
                 {
-                    <a asp-controller="Books" asp-action="Register"
-                       class="@(IsActive("Books") ? "active" : null)"
-                       aria-current="@(IsActive("Books") ? "page" : null)">Register Book</a>
-                    <a asp-controller="Users" asp-action="Register"
-                       class="@(IsActive("Users") ? "active" : null)"
-                       aria-current="@(IsActive("Users") ? "page" : null)">Register User</a>
+                    <a asp-controller="Home" asp-action="Index" class="sidebar-link @(IsActive("Home") ? "active" : null)" aria-current="@(IsActive("Home") ? "page" : null)">
+                        @Icon.Svg("home") Dashboard
+                    </a>
                 }
+                <a asp-controller="Inquiry" asp-action="Index" class="sidebar-link @(IsActive("Inquiry") ? "active" : null)" aria-current="@(IsActive("Inquiry") ? "page" : null)">
+                    @Icon.Svg("magnifying-glass") Inquiry
+                </a>
+
                 @if (isMember)
                 {
-                    <a asp-controller="Member" asp-action="MyLoans"
-                       class="@(IsActive("Member") && ViewContext.RouteData.Values["action"]?.ToString() == "MyLoans" ? "active" : null)">My Loans</a>
-                    <a asp-controller="Member" asp-action="MyReservations"
-                       class="@(IsActive("Member") && ViewContext.RouteData.Values["action"]?.ToString() == "MyReservations" ? "active" : null)">My Reservations</a>
-                    <a asp-controller="Member" asp-action="MyFines"
-                       class="@(IsActive("Member") && ViewContext.RouteData.Values["action"]?.ToString() == "MyFines" ? "active" : null)">My Fines</a>
-                    <a asp-controller="Member" asp-action="MyNotifications"
-                       class="@(IsActive("Member") && ViewContext.RouteData.Values["action"]?.ToString() == "MyNotifications" ? "active" : null)">My Notifications</a>
+                    <div class="sidebar-section">My Library</div>
+                    <a asp-controller="Member" asp-action="MyLoans" class="sidebar-link @(IsActiveAction("Member", "MyLoans") ? "active" : null)">@Icon.Svg("queue-list") My Loans</a>
+                    <a asp-controller="Member" asp-action="MyReservations" class="sidebar-link @(IsActiveAction("Member", "MyReservations") ? "active" : null)">@Icon.Svg("bookmark") My Reservations</a>
+                    <a asp-controller="Member" asp-action="MyFines" class="sidebar-link @(IsActiveAction("Member", "MyFines") ? "active" : null)">@Icon.Svg("currency-dollar") My Fines</a>
+                    <a asp-controller="Member" asp-action="MyNotifications" class="sidebar-link @(IsActiveAction("Member", "MyNotifications") ? "active" : null)">@Icon.Svg("bell") My Notifications</a>
                 }
+
                 @if (!isMember)
                 {
-                    <a asp-controller="Loans" asp-action="Index"
-                       class="@(IsActive("Loans") ? "active" : null)"
-                       aria-current="@(IsActive("Loans") ? "page" : null)">Loans</a>
+                    <div class="sidebar-section">Circulation</div>
+                    <a asp-controller="Loans" asp-action="Index" class="sidebar-link @(IsActive("Loans") ? "active" : null)" aria-current="@(IsActive("Loans") ? "page" : null)">@Icon.Svg("clock") Loans</a>
+                    @if (isLibrarian)
+                    {
+                        <a asp-controller="Returns" asp-action="Index" class="sidebar-link @(IsActive("Returns") ? "active" : null)" aria-current="@(IsActive("Returns") ? "page" : null)">@Icon.Svg("arrow-uturn-left") Returns</a>
+                    }
+                    <a asp-controller="Reservations" asp-action="Index" class="sidebar-link @(IsActive("Reservations") ? "active" : null)" aria-current="@(IsActive("Reservations") ? "page" : null)">@Icon.Svg("bookmark") Reservations</a>
                 }
+
                 @if (isLibrarian)
                 {
-                    <a asp-controller="Returns" asp-action="Index"
-                       class="@(IsActive("Returns") ? "active" : null)"
-                       aria-current="@(IsActive("Returns") ? "page" : null)">Returns</a>
-                    <a asp-controller="Notifications" asp-action="Index"
-                       class="@(IsActive("Notifications") ? "active" : null)"
-                       aria-current="@(IsActive("Notifications") ? "page" : null)">Notifications</a>
-                    <a asp-controller="Reports" asp-action="Index"
-                       class="@(IsActive("Reports") ? "active" : null)"
-                       aria-current="@(IsActive("Reports") ? "page" : null)">Reports</a>
+                    <div class="sidebar-section">Catalogue &amp; Borrowers</div>
+                    <a asp-controller="Books" asp-action="Index" class="sidebar-link @(IsActive("Books") ? "active" : null)" aria-current="@(IsActiveAction("Books", "Index") ? "page" : null)">@Icon.Svg("book-open") Book Catalogue</a>
+                    <a asp-controller="Users" asp-action="Index" class="sidebar-link @(IsActive("Users") ? "active" : null)" aria-current="@(IsActiveAction("Users", "Index") ? "page" : null)">@Icon.Svg("users") Borrowers</a>
+
+                    <div class="sidebar-section">Reports &amp; Notices</div>
+                    <a asp-controller="Notifications" asp-action="Index" class="sidebar-link @(IsActive("Notifications") ? "active" : null)" aria-current="@(IsActive("Notifications") ? "page" : null)">@Icon.Svg("bell") Notifications</a>
+                    <a asp-controller="Reports" asp-action="Index" class="sidebar-link @(IsActive("Reports") ? "active" : null)" aria-current="@(IsActive("Reports") ? "page" : null)">@Icon.Svg("chart-bar") Reports</a>
                 }
-                @if (!isMember)
-                {
-                    <a asp-controller="Reservations" asp-action="Index"
-                       class="@(IsActive("Reservations") ? "active" : null)"
-                       aria-current="@(IsActive("Reservations") ? "page" : null)">Reservations</a>
-                }
-                <a asp-controller="Inquiry" asp-action="Index"
-                   class="@(IsActive("Inquiry") ? "active" : null)"
-                   aria-current="@(IsActive("Inquiry") ? "page" : null)">Inquiry</a>
             </nav>
-            <div class="nav-auth">
+
+            <div class="sidebar-footer">
                 @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <span class="nav-user">@User.Identity!.Name</span>
-                    <form asp-controller="Account" asp-action="Logout" method="post" class="inline-form">
+                    <div class="sidebar-user">
+                        <span class="sidebar-user-avatar">@Icon.Svg("user-circle")</span>
+                        <span class="min-w-0">
+                            <span class="sidebar-user-name">@User.Identity!.Name</span>
+                            <span class="sidebar-user-role">@(isLibrarian ? "Librarian" : "Member")</span>
+                        </span>
+                    </div>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-link btn-sm">Sign out</button>
+                        <button type="submit" class="btn btn-sm w-full mt-2">@Icon.Svg("arrow-right-on-rectangle", "w-4 h-4") Sign out</button>
                     </form>
                 }
                 else
                 {
-                    <a asp-controller="Account" asp-action="RegisterMember" class="btn btn-sm btn-link">Become a member</a>
-                    <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-primary">Librarian sign in</a>
+                    <div class="sidebar-guest">
+                        <a asp-controller="Account" asp-action="RegisterMember" class="btn btn-sm w-full">@Icon.Svg("user-plus", "w-4 h-4") Become a member</a>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-primary w-full">@Icon.Svg("lock-closed", "w-4 h-4") Sign in</a>
+                    </div>
                 }
             </div>
-        </div>
-    </header>
+        </aside>
 
-    <main id="main-content" class="container main-content">
-        <partial name="_AlertBanner" />
-        @RenderBody()
-    </main>
+        <div class="app-main">
+            <header class="topbar">
+                <button type="button" class="topbar-toggle" id="sidebar-open" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">@Icon.Svg("bars-3")</button>
+                <div class="topbar-title">@ViewData["Title"]</div>
+                <div class="topbar-actions">
+                    @if (User.Identity?.IsAuthenticated != true)
+                    {
+                        <span class="nav-user hidden sm:inline">Not signed in</span>
+                    }
+                    <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                        <span class="theme-toggle-state theme-toggle-light">@Icon.Svg("moon", "w-[18px] h-[18px]")</span>
+                        <span class="theme-toggle-state theme-toggle-dark">@Icon.Svg("sun", "w-[18px] h-[18px]")</span>
+                    </button>
+                </div>
+            </header>
 
-    <footer class="site-footer">
-        <div class="container">
-            <p>Library Management System &mdash; Loan, Return, Reservation, Inquiry, Book &amp; User Registration</p>
+            <main id="main-content" class="main-content">
+                <div class="container">
+                    <partial name="_AlertBanner" />
+                    @RenderBody()
+                </div>
+            </main>
         </div>
-    </footer>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>

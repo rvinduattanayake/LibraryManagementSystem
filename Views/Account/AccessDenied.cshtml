@@ -2,8 +2,14 @@
     ViewData["Title"] = "Access Denied";
 }
 
-<h1>Access Denied</h1>
-<div class="alert alert-error" role="alert">
-    You don't have permission to view that page. Librarian pages require a librarian account, and member pages require a member account.
+<div class="page-header">
+    <span class="page-header-icon">@Icon.Svg("exclamation-triangle")</span>
+    <div class="page-header-text">
+        <h1>Access Denied</h1>
+    </div>
 </div>
-<p><a asp-controller="Home" asp-action="Index">Return to the dashboard</a></p>
+<div class="alert alert-error" role="alert">
+    @Icon.Svg("exclamation-triangle")
+    <span>You don't have permission to view that page. Librarian pages require a librarian account, and member pages require a member account.</span>
+</div>
+<p class="mt-4"><a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-sm">@Icon.Svg("home", "w-4 h-4") Return to the dashboard</a></p>
